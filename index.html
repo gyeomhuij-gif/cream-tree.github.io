@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8fafd">
+  <meta name="description" content="공공 건설공사의 계약 주체와 업무 흐름, 조건별 발주기관 직접계약 관계를 탐색하는 안내 페이지">
+  <title>건설공사 계약관계 탐색기</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202124;
+      --muted: #5f6368;
+      --line: #dfe3eb;
+      --canvas: #f8fafd;
+      --surface: #fff;
+      --blue: #1a73e8;
+      --blue-soft: #e8f0fe;
+      --green: #188038;
+      --green-soft: #e6f4ea;
+      --yellow: #f9ab00;
+      --yellow-soft: #fef7e0;
+      --red: #d93025;
+      --red-soft: #fce8e6;
+      --purple: #8430ce;
+      --purple-soft: #f3e8fd;
+      --shadow: 0 1px 2px #20212418, 0 4px 14px #2021240d;
+      font-family: "Google Sans", "Noto Sans KR", "Malgun Gothic", "맑은 고딕", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--canvas); line-height: 1.58; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    a { color: var(--blue); }
+    .topbar {
+      position: sticky; top: 0; z-index: 5; display: flex; align-items: center;
+      gap: 14px; min-height: 66px; padding: 0 26px; background: #fff;
+      border-bottom: 1px solid #e8eaed;
+    }
+    .brand-mark {
+      display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 auto;
+      color: #fff; background: var(--blue); border-radius: 13px;
+      font-size: 18px; font-weight: 800;
+    }
+    .brand-copy { min-width: 220px; }
+    .brand-copy strong { display: block; font-size: 15px; letter-spacing: -.02em; }
+    .brand-copy span { display: block; color: var(--muted); font-size: 12px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .top-link {
+      padding: 7px 12px; color: #3c4043; border: 1px solid transparent;
+      border-radius: 999px; text-decoration: none; font-size: 13px;
+    }
+    .top-link:hover { background: #f1f3f4; }
+    .top-link.primary { color: var(--blue); border-color: #dadce0; }
+
+    .page { max-width: 1440px; margin: 0 auto; padding: 34px 34px 54px; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin: 5px 2px 24px; }
+    .eyebrow { margin-bottom: 8px; color: var(--blue); font-size: 12px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { max-width: 780px; margin: 0; font-size: clamp(27px, 3vw, 39px); line-height: 1.18; letter-spacing: -.045em; }
+    .hero p { max-width: 760px; margin: 12px 0 0; color: var(--muted); font-size: 15px; }
+    .hero-note { flex: 0 0 auto; max-width: 255px; padding: 12px 15px; background: var(--blue-soft); color: #174ea6; border-radius: 16px; font-size: 13px; }
+    .hero-note strong { display: block; margin-bottom: 2px; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 9px 18px; align-items: center; margin: 0 0 16px; padding: 0 4px; color: var(--muted); font-size: 12px; }
+    .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+    .legend-line { width: 24px; border-top: 2px solid var(--blue); }
+    .legend-line.dashed { border-top-style: dashed; border-color: #73777f; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); }
+    .layout { display: grid; grid-template-columns: minmax(330px, .93fr) minmax(380px, 1.07fr); gap: 18px; align-items: start; }
+    .panel { background: var(--surface); border: 1px solid #e1e5ed; border-radius: 22px; box-shadow: var(--shadow); }
+    .tree-panel { overflow: hidden; }
+    .panel-head { padding: 18px 20px 14px; border-bottom: 1px solid #edf0f4; }
+    .panel-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .panel-head h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+    .panel-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .text-button { padding: 6px 9px; color: var(--blue); background: transparent; border: 0; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 650; }
+    .text-button:hover { background: var(--blue-soft); }
+    .search-wrap { position: relative; margin-top: 14px; }
+    .search-icon { position: absolute; top: 50%; left: 12px; width: 17px; height: 17px; color: #5f6368; transform: translateY(-50%); pointer-events: none; }
+    #search {
+      width: 100%; height: 42px; padding: 0 14px 0 40px; color: var(--ink);
+      background: #f1f3f4; border: 1px solid transparent; border-radius: 13px; outline: 0;
+      font-size: 14px; transition: .15s ease;
+    }
+    #search:focus { background: #fff; border-color: #a8c7fa; box-shadow: 0 0 0 3px #1a73e81c; }
+    .tree { margin: 0; padding: 14px 14px 20px; list-style: none; }
+    .tree ul { margin: 4px 0 6px 15px; padding: 0 0 0 14px; border-left: 1px solid #dfe3eb; list-style: none; }
+    .tree li { margin: 3px 0; }
+    .node-row { display: flex; align-items: center; gap: 4px; min-height: 44px; }
+    .toggle {
+      display: grid; place-items: center; width: 25px; height: 28px; flex: 0 0 25px;
+      color: #74777d; background: transparent; border: 0; border-radius: 8px; cursor: pointer;
+    }
+    .toggle:hover { background: #f1f3f4; }
+    .toggle svg { width: 15px; height: 15px; transition: transform .16s ease; }
+    .toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+    .toggle-spacer { flex: 0 0 25px; }
+    .node-button {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      width: 100%; min-width: 0; min-height: 42px; padding: 8px 10px; text-align: left; background: transparent;
+      border: 0; border-radius: 11px; cursor: pointer; transition: background .13s ease;
+    }
+    .node-button:hover { background: #f5f7fb; }
+    .node-button[aria-current="true"] { background: var(--blue-soft); color: #174ea6; }
+    .node-title { min-width: 0; font-size: 14px; font-weight: 650; }
+    .node-subtitle { display: block; overflow: hidden; margin-top: 2px; color: #53575c; font-size: 12px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+    .node-kind { flex: 0 0 auto; padding: 4px 8px; color: #4b5055; background: #f1f3f4; border-radius: 99px; font-size: 11px; }
+    .group-root > .node-row .node-button { padding: 11px 12px; background: #f1f6ff; }
+    .group-root > .node-row .node-title { font-size: 15px; }
+    .tree > li > ul { margin-top: 8px; }
+    .hidden-by-search { display: none !important; }
+    .empty-search { display: none; padding: 4px 22px 24px; color: var(--muted); font-size: 12px; }
+    .empty-search.visible { display: block; }
+
+    .detail-panel { position: sticky; top: 84px; overflow: hidden; }
+    .detail-top { padding: 23px 24px 18px; border-bottom: 1px solid #edf0f4; }
+    .detail-kicker { display: flex; align-items: center; gap: 8px; color: var(--blue); font-size: 12px; font-weight: 750; letter-spacing: .04em; }
+    .detail-kicker::before { width: 8px; height: 8px; content: ""; background: currentColor; border-radius: 50%; }
+    .detail-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    #detailTitle { margin: 10px 0 0; font-size: clamp(21px, 2.4vw, 29px); line-height: 1.25; letter-spacing: -.04em; }
+    #detailBadge { flex: 0 0 auto; margin-top: 13px; padding: 5px 9px; color: #174ea6; background: var(--blue-soft); border-radius: 99px; font-size: 12px; }
+    #detailSummary { margin: 11px 0 0; color: #41464b; font-size: 15px; line-height: 1.7; }
+    .detail-content { display: grid; gap: 14px; padding: 18px 24px 23px; }
+    .detail-block { padding: 15px 16px; background: #f8fafd; border: 1px solid #edf0f4; border-radius: 14px; }
+    .detail-block h3 { display: flex; align-items: center; gap: 7px; margin: 0 0 9px; font-size: 14px; }
+    .detail-block h3 svg { width: 15px; height: 15px; color: var(--blue); }
+    .detail-block p, .detail-block li { margin: 0; color: #41464b; font-size: 13px; line-height: 1.7; }
+    .detail-block ul { display: grid; gap: 7px; margin: 0; padding-left: 19px; }
+    .example { background: #fffaf0; border-color: #f7e7bc; }
+    .example h3 svg { color: #b06000; }
+    .caution { background: #fef7e0; border-color: #fce8b2; }
+    .sources { display: flex; flex-wrap: wrap; gap: 7px; }
+    .source-link { display: inline-flex; align-items: center; min-height: 34px; padding: 6px 11px; color: #174ea6; background: #e8f0fe; border-radius: 99px; text-decoration: none; font-size: 12px; }
+    .source-link:hover { background: #d2e3fc; }
+    .detail-footer { padding: 0 24px 21px; color: #5f6368; font-size: 12px; line-height: 1.6; }
+    .overview {
+      display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center;
+      gap: 9px; margin-top: 17px; padding: 13px 15px; background: #fff; border: 1px solid #e1e5ed; border-radius: 16px;
+    }
+    .overview-step { min-width: 0; }
+    .overview-step strong { display: block; font-size: 13px; }
+    .overview-step span { display: block; overflow: hidden; color: var(--muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .overview-arrow { color: #9aa0a6; font-size: 17px; }
+    .flow-section { margin: 26px 0 19px; }
+    .flow-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin: 0 2px 13px; }
+    .flow-heading h2 { margin: 0; font-size: 20px; letter-spacing: -.035em; }
+    .flow-heading p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .flow-key { flex: 0 0 auto; color: var(--muted); font-size: 12px; }
+    .flow-canvas { padding: 22px; overflow: hidden; }
+    .flow-stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 22px; }
+    .flow-stage { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 8px 10px; color: #3c4043; background: #f8fafd; border: 1px solid #edf0f4; border-radius: 11px; }
+    .flow-stage b { display: grid; place-items: center; width: 22px; height: 22px; flex: 0 0 22px; color: #174ea6; background: var(--blue-soft); border-radius: 50%; font-size: 10px; }
+    .flow-stage span { overflow: hidden; font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .flow-owner-wrap { display: grid; justify-items: center; }
+    .flow-card {
+      display: block; width: 100%; padding: 12px 14px; text-align: left; color: var(--ink);
+      background: #fff; border: 1px solid #dfe3eb; border-radius: 13px; box-shadow: 0 1px 2px #2021240a;
+      cursor: pointer; transition: border-color .14s ease, box-shadow .14s ease, transform .14s ease;
+    }
+    .flow-card:hover { border-color: #a8c7fa; box-shadow: var(--shadow); transform: translateY(-1px); }
+    .flow-card[aria-current="true"] { border-color: var(--blue); box-shadow: 0 0 0 2px #1a73e81a; }
+    .flow-card strong { display: block; font-size: 14px; line-height: 1.45; }
+    .flow-card span { display: block; margin-top: 4px; color: #53575c; font-size: 12px; line-height: 1.55; }
+    .flow-owner { width: min(100%, 460px); padding: 15px 18px; color: #fff; background: #174ea6; border-color: #174ea6; text-align: center; }
+    .flow-owner span { color: #d7e3ff; }
+    .flow-connector { position: relative; display: grid; place-items: center; height: 40px; color: #4b5055; font-size: 11px; }
+    .flow-connector::before { position: absolute; top: 0; bottom: 0; left: 50%; border-left: 2px solid #8ab4f8; content: ""; }
+    .flow-connector span { position: relative; padding: 2px 9px; background: #fff; border: 1px solid #d2e3fc; border-radius: 99px; }
+    .flow-connector span::after { position: absolute; bottom: -5px; left: calc(50% - 3px); width: 6px; height: 6px; content: ""; background: #8ab4f8; border-right: 1px solid #8ab4f8; border-bottom: 1px solid #8ab4f8; transform: rotate(45deg); }
+    .flow-lane-label { display: flex; align-items: center; gap: 9px; margin: 0 0 7px; color: #4b5055; font-size: 12px; font-weight: 700; }
+    .flow-lane-label::after { height: 1px; flex: 1; background: #edf0f4; content: ""; }
+    .flow-direct-grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; padding-top: 22px; }
+    .flow-direct-grid::before { position: absolute; z-index: 2; top: 0; right: 12.5%; left: 12.5%; border-top: 2px solid #8ab4f8; content: ""; pointer-events: none; }
+    .flow-direct-grid .flow-card { position: relative; min-height: 75px; }
+    .flow-direct-grid .flow-card::before { position: absolute; z-index: 2; top: -23px; left: 50%; height: 22px; border-left: 2px solid #8ab4f8; content: ""; pointer-events: none; }
+    .flow-direct-grid .flow-card::after { position: absolute; z-index: 2; top: -7px; left: calc(50% - 4px); width: 7px; height: 7px; content: ""; border-right: 2px solid #8ab4f8; border-bottom: 2px solid #8ab4f8; transform: rotate(45deg); pointer-events: none; }
+    .flow-direct-grid .prime-card { background: #f1f6ff; border-color: #c6dafc; }
+    .flow-conditional { margin-top: 15px; padding: 12px 13px 13px; background: #fbfcff; border: 1px dashed #c4d7f5; border-radius: 14px; }
+    .flow-conditional h3 { margin: 0 0 9px; color: #3c4043; font-size: 12px; }
+    .flow-conditional-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .flow-conditional-grid .flow-card { min-height: 68px; }
+    .flow-branch-link { position: relative; display: grid; justify-items: center; width: 50%; margin: 8px 0 -8px 37.5%; color: #4b5055; font-size: 11px; }
+    .flow-branch-link::before { height: 15px; border-left: 2px solid #8ab4f8; content: ""; }
+    .flow-branch-link::after { position: absolute; top: 10px; width: 7px; height: 7px; content: ""; border-right: 2px solid #8ab4f8; border-bottom: 2px solid #8ab4f8; transform: rotate(45deg); }
+    .flow-branch-link span { padding: 1px 7px 3px; background: #fff; }
+    .flow-subcontracts { width: 50%; margin: 0 0 0 37.5%; padding: 12px 13px 13px; background: #f8fafd; border: 1px solid #e5eaf2; border-radius: 14px; }
+    .flow-subcontracts h3, .flow-safety-card h3 { margin: 0 0 9px; color: #3c4043; font-size: 12px; }
+    .flow-sub-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .flow-sub-grid .flow-card { min-height: 68px; }
+    .flow-coordination { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 13px 0 0; padding: 9px 12px; color: #4b5055; border: 1px dashed #aeb4be; border-radius: 10px; font-size: 12px; line-height: 1.55; text-align: center; }
+    .flow-coordination span { color: #174ea6; font-weight: 700; }
+    .flow-photo-notes { margin-top: 14px; padding: 13px; background: #f8fafd; border: 1px solid #e5eaf2; border-radius: 13px; }
+    .flow-photo-notes h3 { margin: 0 0 5px; font-size: 14px; }
+    .flow-photo-notes > p { margin: 0 0 12px; color: #53575c; font-size: 12px; line-height: 1.6; }
+    .flow-photo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .flow-photo-grid div { padding: 11px 12px; background: #fff; border: 1px solid #edf0f4; border-radius: 10px; }
+    .flow-photo-grid strong { display: block; margin-bottom: 5px; color: #174ea6; font-size: 12px; }
+    .flow-photo-grid span { display: block; color: #41464b; font-size: 12px; line-height: 1.6; }
+    .flow-safety { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .flow-safety-card { padding: 13px; background: #fffdf5; border: 1px solid #f1e4bb; border-radius: 14px; }
+    .flow-safety-card h3 { display: flex; align-items: center; gap: 7px; }
+    .flow-safety-card h3::before { width: 7px; height: 7px; content: ""; background: var(--yellow); border-radius: 50%; }
+    .flow-safety-link { margin-top: 8px; padding: 8px 10px; }
+    .flow-sequence { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+    .flow-sequence span { position: relative; display: grid; place-items: center; min-height: 54px; padding: 7px 8px; color: #4c3b0b; background: #fff; border: 1px solid #f3e7c2; border-radius: 9px; font-size: 11px; line-height: 1.5; text-align: center; }
+    .flow-sequence span + span::before { position: absolute; left: -8px; color: #b06000; content: "›"; font-size: 15px; font-weight: 800; }
+    .flow-sequence b { display: block; font-size: 11px; }
+    .flow-safety-note { margin: 8px 0 0; color: #534621; font-size: 11px; line-height: 1.6; }
+    .flow-caption { margin: 12px 1px 0; color: #5f6368; font-size: 11px; line-height: 1.6; }
+    .source-section { margin-top: 19px; padding: 18px 21px; }
+    .source-section h2 { margin: 0 0 12px; font-size: 16px; }
+    .source-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .source-chip { padding: 8px 11px; color: #3c4043; background: #f8fafd; border: 1px solid #e4e7eb; border-radius: 10px; text-decoration: none; font-size: 12px; }
+    .source-chip:hover { border-color: #a8c7fa; background: #f1f6ff; }
+    .source-note { margin: 12px 0 0; color: #53575c; font-size: 12px; line-height: 1.6; }
+    .footer { padding: 17px 4px 0; color: #5f6368; font-size: 12px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @media (max-width: 900px) {
+      .page { padding: 25px 20px 42px; }
+      .layout { grid-template-columns: 1fr; }
+      .detail-panel { position: static; }
+      .hero-note { display: none; }
+      .flow-direct-grid, .flow-conditional-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 11px; }
+      .flow-direct-grid::before { display: none; }
+      .flow-direct-grid .flow-card::before { display: none; }
+      .flow-direct-grid .flow-card::after { display: none; }
+      .flow-branch-link { width: 100%; margin: 10px 0 -8px; }
+      .flow-subcontracts { width: 100%; margin-left: 0; }
+      .flow-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .topbar { min-height: 58px; padding: 0 15px; }
+      .brand-copy { min-width: 0; }
+      .top-link:not(.primary) { display: none; }
+      .page { padding: 22px 13px 36px; }
+      .hero { margin: 4px 2px 18px; }
+      .hero p { font-size: 14px; }
+      .layout { gap: 12px; }
+      .panel { border-radius: 17px; }
+      .detail-top { padding: 19px 17px 15px; }
+      .detail-content { padding: 14px 16px 18px; }
+      .detail-footer { padding: 0 16px 18px; }
+      .flow-heading { display: block; }
+      .flow-key { display: block; margin-top: 7px; }
+      .flow-canvas { padding: 14px 11px; }
+      .flow-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-bottom: 16px; }
+      .flow-stage { padding: 7px; }
+      .flow-stage span { font-size: 11px; }
+      .flow-direct-grid { gap: 7px; }
+      .flow-direct-grid .flow-card { min-height: 88px; padding: 12px 10px; }
+      .flow-card strong { font-size: 13px; }
+      .flow-card span { font-size: 11px; }
+      .flow-safety { grid-template-columns: 1fr; gap: 8px; }
+      .flow-sequence { gap: 5px; }
+      .flow-sequence span { padding: 6px 5px; font-size: 10px; }
+      .flow-sequence b { font-size: 10px; }
+      .flow-coordination { font-size: 11px; }
+      .flow-sub-grid { grid-template-columns: 1fr; }
+      .flow-photo-grid { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark" aria-hidden="true">건</div>
+    <div class="brand-copy">
+      <strong>건설공사 계약관계 탐색기</strong>
+      <span>발주청 건설업무 역량강화 과제</span>
+    </div>
+    <nav class="top-actions" aria-label="주요 링크">
+      <a class="top-link" href="#sources">근거·참고자료</a>
+      <a class="top-link" href="#flow">업무 흐름도</a>
+      <a class="top-link primary" href="#explorer">관계 탐색 시작</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Public construction · contract map</div>
+        <h1>누가 계약하고,<br>누구와 함께 일할까요?</h1>
+        <p>왼쪽에서 계약부서와 계약 주체를 눌러 관계를 펼쳐 보세요. 항목을 선택하면 역할 설명, 실무 예시, 확인할 근거가 함께 표시됩니다.</p>
+      </div>
+      <aside class="hero-note">
+        <strong>먼저 기억할 점</strong>
+        계약 실무를 하는 부서와 계약서상 당사자는 다를 수 있습니다. 실제 계약 명의와 과업 범위를 기준으로 확인하세요.
+      </aside>
+    </section>
+
+    <section class="flow-section" id="flow" aria-labelledby="flowHeading">
+      <div class="flow-heading">
+        <div>
+          <h2 id="flowHeading">공사 업무 흐름 한눈에 보기</h2>
+          <p>발주기관의 직접 계약부터 현장 시공·안전 점검까지, 계약과 협업 흐름을 구분했습니다.</p>
+        </div>
+        <span class="flow-key">실선: 계약·지정 흐름　·　점선: 협의·검토·보고</span>
+      </div>
+      <div class="panel flow-canvas">
+        <div class="flow-stages" aria-label="공사 주요 단계">
+          <div class="flow-stage"><b>1</b><span>설계·발주 준비</span></div>
+          <div class="flow-stage"><b>2</b><span>용역·공사 계약</span></div>
+          <div class="flow-stage"><b>3</b><span>시공·현장 조정</span></div>
+          <div class="flow-stage"><b>4</b><span>안전 점검·조치</span></div>
+        </div>
+        <div class="flow-owner-wrap">
+          <button class="flow-card flow-owner" type="button" data-flow-role="contractOffice">
+            <strong>발주기관 · 계약부서</strong>
+            <span>입찰·계약·대금 지급을 담당하고, 계약 명의는 발주기관 기준으로 확인</span>
+          </button>
+        </div>
+        <div class="flow-connector"><span>발주 · 직접 계약 · 구매</span></div>
+        <div class="flow-direct-grid" aria-label="발주기관이 직접 계약하는 주체">
+          <button class="flow-card" type="button" data-flow-role="design">
+            <strong>설계사</strong><span>설계용역 계약 · 도면·시방 작성</span>
+          </button>
+          <button class="flow-card" type="button" data-flow-role="cm">
+            <strong>건설사업관리용역사 (CM)</strong><span>용역 계약 · 공정·품질 검토와 보고</span>
+          </button>
+          <button class="flow-card prime-card" type="button" data-flow-role="prime">
+            <strong>원도급사</strong><span>공사 도급계약 · 현장 시공 총괄</span>
+          </button>
+          <button class="flow-card" type="button" data-flow-role="materials">
+            <strong>관급 자재 납품사</strong><span>발주기관 구매 · 현장 납품·설치 조건 확인</span>
+          </button>
+        </div>
+        <section class="flow-conditional" aria-label="조건 충족 시 발주기관 직접 계약">
+          <h3>공사·발주 조건에 따라 발주기관이 별도 계약할 수 있는 주체</h3>
+          <div class="flow-conditional-grid">
+            <button class="flow-card" type="button" data-flow-role="wasteTreatment">
+              <strong>건설폐기물 처리업체</strong><span>법정 요건 충족 시 공사와 분리 발주</span>
+            </button>
+            <button class="flow-card" type="button" data-flow-role="installCondition">
+              <strong>설치조건부 납품사</strong><span>발주기관 물품구매에 납품·설치 포함</span>
+            </button>
+            <button class="flow-card" type="button" data-flow-role="artwork">
+              <strong>미술작품 작가·설치사</strong><span>법정 대상 건축물의 제작·설치 계약</span>
+            </button>
+          </div>
+        </section>
+        <div class="flow-coordination"><span>CM</span> ↔ 설계사 · 원도급사　/　설계·시공 검토, 공정·품질 협의, 발주청 보고 (계약 범위 내)</div>
+        <div class="flow-branch-link" aria-hidden="true"><span>원도급사 계약·관리</span></div>
+        <section class="flow-subcontracts" aria-label="원도급사와 하위 계약 관계">
+          <h3>원도급사가 현장을 수행하며 연결하는 계약·절차</h3>
+          <div class="flow-sub-grid">
+            <button class="flow-card" type="button" data-flow-role="subcontractor">
+              <strong>하도급사</strong><span>전문공종 도급 · 원도급사와 공정·품질 조정</span>
+            </button>
+            <button class="flow-card" type="button" data-flow-role="supplierPrime">
+              <strong>사급자재 납품·설치사</strong><span>원도급사 또는 하도급사가 구매·설치 계약</span>
+            </button>
+            <button class="flow-card" type="button" data-flow-role="inspection">
+              <strong>법정 안전점검 수행기관</strong><span>발주자 지정 통보 후 시공자가 7일 이내 계약</span>
+            </button>
+            <button class="flow-card" type="button" data-flow-role="equipmentVendor">
+              <strong>건설기계 임대·운영업체</strong><span>공사별 장비 임차·운영 계약, 반입·작업계획 확인</span>
+            </button>
+          </div>
+        </section>
+        <div class="flow-safety">
+          <section class="flow-safety-card">
+            <h3>법정 안전점검 수행기관</h3>
+            <div class="flow-sequence" aria-label="시공자가 기관 지정을 요청하고 지정권자가 지정·통보하면 시공자가 7일 이내 계약">
+              <span><b>시공자</b>수행기관 지정 요청</span>
+              <span><b>지정권자*</b>명부에서 지정·통보</span>
+              <span><b>시공자</b>통보 후 7일 이내 계약</span>
+            </div>
+            <button class="flow-card flow-safety-link" type="button" data-flow-role="inspection">
+              <strong>지정된 독립 점검기관</strong><span>시공자 계약·선지급 → 정기·초기점검비 증빙 정산</span>
+            </button>
+            <p class="flow-safety-note">* 발주청이면 발주자, 발주청이 아니면 인·허가기관의 장이 지정합니다. 지침상 지정공고·평가 절차를 따릅니다.</p>
+          </section>
+          <section class="flow-safety-card">
+            <h3>산업재해 예방 기술지도기관</h3>
+            <div class="flow-sequence" aria-label="법정 계약 당사자가 지도기관과 계약하고 도급인이 지도를 받아 조치">
+              <span><b>발주자</b>지정 지도기관 중 선택·계약*</span>
+              <span><b>지도기관</b>예방 지도</span>
+              <span><b>도급인</b>개선 조치</span>
+            </div>
+            <button class="flow-card flow-safety-link" type="button" data-flow-role="technicalGuidance">
+              <strong>건설재해예방전문지도기관</strong><span>발주자가 직접 계약·지급하는 구조(법정 대상·계약 당사자 확인)</span>
+            </button>
+            <p class="flow-safety-note">* 법 제73조상 계약 당사자는 발주자 또는 건설공사도급인이며, 발주자로부터 최초 도급받은 수급인은 제외됩니다. 대상 공사는 착공일 전날까지 계약합니다.</p>
+          </section>
+        </div>
+        <section class="flow-photo-notes" aria-label="제공된 사옥공사 업무흐름도 사진에서 보완한 실무 절차">
+          <h3>사옥공사 업무흐름도 사진에서 보완한 실무 절차</h3>
+          <p>아래는 제공된 한전 사옥공사부의 업무흐름도 사례입니다. 조직별 내부 처리 절차를 포함하므로 모든 공사에 동일한 법정 의무나 계약 관계로 적용되는 것은 아닙니다.</p>
+          <div class="flow-photo-grid">
+            <div><strong>착공 전 인수·검토</strong><span>설계도서 이관·검토 후 공사 및 건설사업관리 용역의 계약 범위·성과품·승인 절차를 확인합니다.</span></div>
+            <div><strong>안전·장비 작업계획</strong><span>작업허가서, 일일 작업계획, 장비 반입 신청 및 고위험·양중 작업계획을 확인하고 승인 후 작업합니다.</span></div>
+            <div><strong>품질·검측 기록</strong><span>레미콘 품질시험, 타설 입회, 자재·공정별 검사 결과와 사진·동영상 등 품질기록을 관리합니다.</span></div>
+            <div><strong>폐기물·설계변경</strong><span>분리 발주된 폐기물 용역은 배출 일정·물량·종류, 계근 자료와 인계·처리 기록을 맞추고, 설계변경은 승인 절차 후 시행합니다.</span></div>
+          </div>
+        </section>
+        <p class="flow-caption">주체 카드를 누르면 아래 토글 탐색기의 해당 역할 설명으로 이동합니다. 표시된 추가 직접계약은 법정 분리발주 요건·건축물 미술작품 대상 여부·입찰서상 납품 및 설치 범위에 따라 적용됩니다. 건설기계 임대·운영업체는 사진의 장비 반입·작업계획 절차를 바탕으로 한 조건부 실무 예시이며, 계약 상대방은 실제 장비를 발주한 원·하도급사 등 계약서에 따라 달라집니다.</p>
+      </div>
+    </section>
+
+    <section class="layout" id="explorer" aria-label="계약 주체 탐색">
+      <section class="panel tree-panel" aria-labelledby="treeHeading">
+        <div class="panel-head">
+          <div class="panel-head-row">
+            <div>
+              <h2 id="treeHeading">계약 관계 펼쳐보기</h2>
+              <p>항목 이름을 누르면 설명을 확인하고, 화살표를 누르면 하위 주체가 열립니다.</p>
+            </div>
+            <button class="text-button" id="expandAll" type="button">모두 펼치기</button>
+          </div>
+          <label class="search-wrap">
+            <span class="sr-only">계약 주체 검색</span>
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input id="search" type="search" placeholder="예: 관급, 설계, 안전점검" autocomplete="off">
+          </label>
+        </div>
+        <nav aria-label="계약 주체 계층">
+          <ul class="tree" id="tree"></ul>
+          <p class="empty-search" id="emptySearch">검색어와 일치하는 계약 주체가 없습니다.</p>
+        </nav>
+      </section>
+
+      <article class="panel detail-panel" aria-live="polite" aria-labelledby="detailTitle">
+        <div class="detail-top">
+          <div class="detail-kicker" id="detailKicker">계약 관계 안내</div>
+          <div class="detail-title-row">
+            <h2 id="detailTitle">계약부서</h2>
+            <span id="detailBadge">발주기관 내부</span>
+          </div>
+          <p id="detailSummary"></p>
+        </div>
+        <div class="detail-content">
+          <section class="detail-block">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5.5h16v13H4zM8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              맡는 일과 계약 관계
+            </h3>
+            <ul id="detailDuties"></ul>
+          </section>
+          <section class="detail-block example">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.2 14.6 8.5l5.8.8-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.2-4.1 5.8-.8L12 3.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+              쉬운 예시
+            </h3>
+            <p id="detailExample"></p>
+          </section>
+          <section class="detail-block caution" id="cautionBlock">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.5 21 20H3L12 3.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 9v4.8m0 2.5v.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              계약 전에 확인
+            </h3>
+            <p id="detailCaution"></p>
+          </section>
+          <section class="detail-block">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5M12 7v5l3.3 2M14.2 3.8 20.5 3.5 20 9.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              참고 출처
+            </h3>
+            <div class="sources" id="detailSources"></div>
+          </section>
+        </div>
+        <div class="detail-footer">법령 링크는 법제처 국가법령정보센터로 연결됩니다. 구체적인 의무는 시행 시점과 공사 조건을 확인하세요.</div>
+      </article>
+    </section>
+
+    <section class="panel source-section" id="sources">
+      <h2>공식 기준과 과제 자료</h2>
+      <div class="source-grid" id="allSources"></div>
+      <p class="source-note">실무 예시는 구조를 이해하기 위한 가상 사례입니다. 원본 과제자료의 일반형을 보충 설명하고 법제처의 관련 조문을 연결했습니다. 이 페이지는 법률자문이 아니며, 계약 명의·발주 방식·적용 대상은 해당 공사 서류와 최신 규정으로 확인해야 합니다.</p>
+    </section>
+    <footer class="footer">자료 기준: 제공된 계약관계도 및 안전업무 총괄표 · 법제처 국가법령정보센터 확인 · 2026.10.21</footer>
+  </main>
+
+  <script>
+    const law = {
+      constructionTech: { label: "건설기술 진흥법 제62조", href: "https://www.law.go.kr/법령/건설기술진흥법/제62조" },
+      safetyDecree: { label: "시행령 제100조·제100조의2", href: "https://www.law.go.kr/법령/건설기술진흥법시행령/제100조" },
+      constructionSafetyGuideline: { label: "건설공사 안전관리 업무수행 지침 제18조·제51조·제53조", href: "https://www.law.go.kr/admRulInfoP.do?admRulSeq=2100000216960" },
+      constructionSafetyCost: { label: "건설기술 진흥법 시행규칙 제60조", href: "https://www.law.go.kr/법령/건설기술진흥법시행규칙/제60조" },
+      safetyHealth: { label: "산업안전보건법 제73조", href: "https://www.law.go.kr/법령/산업안전보건법/제73조" },
+      safetyHealthDecree: { label: "산업안전보건법 시행령 제59조", href: "https://www.law.go.kr/법령/산업안전보건법시행령/제59조" },
+      constructionIndustry: { label: "건설산업기본법 제29조", href: "https://www.law.go.kr/법령/건설산업기본법/제29조" },
+      fireContract: { label: "소방시설공사업법 제21조", href: "https://www.law.go.kr/법령/소방시설공사업법/제21조" },
+      constructionWaste: { label: "건설폐기물법 제15조", href: "https://www.law.go.kr/법령/건설폐기물의재활용촉진에관한법률/제15조" },
+      constructionWasteDecree: { label: "건설폐기물법 시행령 제11조 (위탁처리량 100톤 기준)", href: "https://www.law.go.kr/법령/건설폐기물의재활용촉진에관한법률시행령/제11조" },
+      constructionWasteContract: { label: "건설폐기물법 제16조", href: "https://www.law.go.kr/법령/건설폐기물의재활용촉진에관한법률/제16조" },
+      culturalArt: { label: "문화예술진흥법 제9조·제9조의2", href: "https://www.law.go.kr/법령/문화예술진흥법/제9조" },
+      culturalArtDecree: { label: "문화예술진흥법 시행령 제12조", href: "https://www.law.go.kr/법령/문화예술진흥법시행령/제12조" },
+      installationProcurement: { label: "Google 검색: 나라장터 설치조건부 구매 사례", href: "https://www.google.com/search?q=site%3Ag2b.go.kr+%EC%84%A4%EC%B9%98%EC%A1%B0%EA%B1%B4%EB%B6%80+%EB%AC%BC%ED%92%88%EA%B5%AC%EB%A7%A4+%EA%B3%84%EC%95%BD" },
+      artworkContract: { label: "Google 검색: 문체부 미술작품 표준계약서", href: "https://www.google.com/search?q=site%3Amcst.go.kr+%22%EA%B1%B4%EC%B6%95%EB%AC%BC+%EB%AF%B8%EC%88%A0%EC%9E%91%ED%92%88+%EC%A0%9C%EC%9E%91%EA%B3%84%EC%95%BD%EC%84%9C%22" },
+      workGuide: { label: "건설공사 사업관리 업무지침", href: "https://www.law.go.kr/LSW//admRulInfoP.do?admRulSeq=2100000225470&chrClsCd=010201" }
+    };
+    const sources = [
+      { label: "건설공사 계약·업무 관계도", href: "건설공사_계약업무관계_A4.md", local: true },
+      { label: "착공 전 계약관계도 초안", href: "사옥공사부_착공전_계약관계도_초안.md", local: true },
+      { label: "안전업무 총괄표 발췌", href: "총괄표_계약관련_발췌.md", local: true },
+      law.constructionTech, law.safetyDecree, law.constructionSafetyGuideline, law.constructionSafetyCost,
+      law.safetyHealth, law.safetyHealthDecree, law.constructionIndustry, law.fireContract,
+      law.constructionWaste, law.constructionWasteDecree, law.constructionWasteContract, law.culturalArt, law.culturalArtDecree, law.installationProcurement, law.workGuide
+    ];
+    const roles = {
+      contractOffice: {
+        id: "contractOffice", title: "계약부서", kind: "계약 실무", subtitle: "발주기관 명의의 계약 절차 담당", parent: null,
+        summary: "입찰·계약 체결, 변경계약과 기성금 지급 등 발주기관의 계약 실무를 맡습니다. 통상 계약부서는 발주기관 내부의 담당 부서이며, 법률상 계약 당사자와 계약 명의는 발주기관 또는 발주자입니다.",
+        duties: ["설계·CM 용역과 공사 등 계약을 발주기관 명의로 진행합니다.", "원도급사·직접 구매 자재·전문기관의 계약 관계와 업무 범위를 서류로 확인합니다.", "실제 담당 부서의 권한과 계약서상 당사자를 구별합니다."],
+        example: "공사부서가 공사 발주를 요청하면 계약부서가 입찰과 계약 절차를 진행하고, 계약서에는 발주기관이 계약 당사자로 표시되는 식입니다.",
+        caution: "부서 이름만으로 계약 당사자를 판단하지 않습니다. 입찰공고, 계약서, 과업지시서에 적힌 발주자·계약 상대방을 확인하세요.",
+        sourceKeys: ["계약·업무 관계도", "착공 전 관계도"]
+      },
+      design: {
+        id: "design", title: "설계사", kind: "용역 계약", subtitle: "건축·구조·기계·전기·소방 설계", parent: "contractOffice",
+        summary: "설계용역 계약을 통해 도면·시방서·구조계산 등 설계도서를 작성합니다. 설계질의와 설계변경 과정에서는 발주청, CM, 시공사와 협의합니다.",
+        duties: ["건축·구조 및 기계·전기 등 분야별 설계 범위와 성과품을 정합니다.", "설계 조건·안전 고려사항을 설계도서와 과업지시서에 반영합니다.", "공사 중 설계질의·변경 요청에 검토 의견을 냅니다."],
+        example: "공공청사 신축에서 건축 설계 계약과 구조 설계 계약의 범위가 나뉘면, 도면·계산서 제출 책임과 변경 협의 창구를 각 과업지시서에 명시합니다.",
+        caution: "설계자가 감리·CM까지 맡는다고 자동으로 간주하지 않습니다. 용역 명의, 분야, 계약 범위, 분리발주 및 자격 요건을 확인하세요.",
+        sourceKeys: ["착공 전 관계도", "계약·업무 관계도", "소방 분리도급"]
+      },
+      prime: {
+        id: "prime", title: "원도급사", kind: "공사 도급", subtitle: "시공자·수급인·원수급인", parent: "contractOffice",
+        summary: "발주청과 공사 도급계약을 맺고 공사를 완성하는 주체입니다. 현장 공정·품질·안전과 하도급 관리, 계약상 보고·시정 의무를 수행합니다.",
+        duties: ["계약 도면·시방과 공정에 맞춰 공사를 수행합니다.", "필요한 전문공종을 적법한 절차로 하도급하고 현장을 조정합니다.", "위험성평가, 안전관리계획, 교육과 안전비용 사용 등 계약·법정 업무를 이행합니다."],
+        example: "청사 신축의 원도급사가 골조 공정을 직접 관리하면서 필요한 전문공종을 하도급하고, 발주청과 CM에는 공정·품질 자료를 제출합니다.",
+        caution: "전체 공사 또는 주요 부분을 통째로 재하도급할 수 있는 것으로 보아서는 안 됩니다. 하도급 제한·통보·승인 요건을 공사 유형과 법령에 맞게 확인하세요.",
+        sourceKeys: ["계약·업무 관계도", "건설산업기본법 제29조", "안전업무 총괄표"]
+      },
+      cm: {
+        id: "cm", title: "건설사업관리용역사 (CM)", kind: "용역 계약", subtitle: "등록 건설엔지니어링사업자", parent: "contractOffice",
+        summary: "발주청과 건설사업관리용역 계약을 맺고 과업지시서에 정한 범위에서 공정·품질·안전 등을 검토하고 현장을 관리합니다. 시공을 대신하는 계약 당사자가 아니라, 발주청에 결과를 보고하고 관계자 간 조정을 지원하는 역할입니다.",
+        duties: ["착공 전 설계도서 인수·검토와 시공계획 검토를 지원하고, 과업 범위에 따라 검측·공정·품질관리를 수행합니다.", "현장 품질시험·타설 입회 및 자재·공정 검사 결과를 확인하고 관련 기록을 관리합니다.", "작업허가서와 고위험 작업계획을 검토하고 안전보건 업무 이행 여부를 확인해 발주청에 보고합니다.", "계약 범위 내 설계·시공 질의, 변경 사항과 관계자 협의를 조정합니다."],
+        example: "원도급사가 설계변경을 요청하면 CM이 계약된 과업 범위에서 기술·공정 영향을 검토하고, 발주청은 검토 결과와 계약 권한에 따라 변경 여부를 결정합니다.",
+        caution: "CM의 검토·감독 권한은 계약과 위임 범위에 따라 다릅니다. CM이 발주청의 모든 계약·승인 권한을 자동으로 갖는 것은 아닙니다.",
+        sourceKeys: ["건설공사 사업관리 업무지침", "계약·업무 관계도", "안전업무 총괄표"]
+      },
+      materials: {
+        id: "materials", title: "자재 납품·현장설치 업체", kind: "구매·설치 계약", subtitle: "관급·사급은 구매 주체로 구분", parent: "contractOffice",
+        summary: "관급자재는 발주청이 구매하고, 사급자재는 원도급사나 하도급사가 자기 공사에 필요한 자재를 구매하는 구분입니다. 설치 주체가 따로 있거나 납품에 설치가 포함되면 계약 범위를 명확히 나눕니다.",
+        duties: ["발주청 직접 구매 자재의 납기·검수·설치 조건을 관리합니다.", "원·하도급사가 구매하는 사급자재의 납품·설치 책임을 확인합니다.", "현장 반입, 품질서류, 시공 인터페이스와 하자 책임을 확인합니다."],
+        example: "철근을 발주청이 구매하면 관급입니다. 금속제창을 원도급사가 구매·설치하면 사급입니다. 발주청이 구매하되 설치를 시공사에 맡기는 경우는 도급자설치 조건을 계약서에서 따로 확인합니다.",
+        caution: "자재가 현장에 들어온다고 납품사가 곧바로 원도급사의 하도급사가 되는 것은 아닙니다. 구매자·설치자·시공 범위를 기준으로 판단하세요.",
+        sourceKeys: ["계약·업무 관계도", "착공 전 관계도"]
+      },
+      wasteTreatment: {
+        id: "wasteTreatment", title: "건설폐기물 처리업체", kind: "분리 발주 용역", subtitle: "기준 규모 이상 공공공사는 공사와 분리 발주", parent: "contractOffice",
+        summary: "국가·지자체·법정 공공기관 등이 발주하는 공사에서 위탁처리할 건설폐기물이 100톤 이상이면 공사와 폐기물 처리용역을 분리 발주하고 적격 업체를 선정해야 합니다. 분리 발주된 경우 발주자가 법률상 배출자이며, 허가·신고된 처리업체와 현장별 위탁계약을 체결합니다.",
+        duties: ["공사에서 발생할 폐기물 종류·물량을 조사하고 분리발주 및 처리계획 신고 대상을 확인합니다.", "분리 발주 대상이면 공사 도급과 별도로 적격 처리업체를 선정해 계약합니다.", "배출 일정·폐기물 종류·예상 물량을 처리업체와 조정하고, 계근표·인계서·올바로시스템 처리기록을 대조합니다.", "등록·확인 주체와 처리완료 자료의 제출 범위는 법령과 계약 절차에 맞춰 구분합니다."],
+        example: "공공 철거공사에서 위탁처리할 건설폐기물이 100톤 이상으로 산정되면 발주기관이 철거공사와 처리용역을 별도로 발주하고, 계약 후 배출 일정·종류·물량을 처리업체와 조정합니다. 반출 때는 계근표와 인계·인수 및 올바로시스템 처리기록을 확인합니다.",
+        caution: "100톤은 공사에서 발생하는 전체 폐기물량이 아니라 위탁처리하는 건설폐기물의 양 기준입니다. 분리발주 대상 공공기관인지, 건설폐기물 정의·물량·배출자 지위와 처리업체 허가 범위를 공사별로 확인하세요.",
+        sourceKeys: ["건설폐기물법 제15조", "건설폐기물법 시행령 제11조 (위탁처리량 100톤 기준)", "건설폐기물법 제16조", "계약·업무 관계도"]
+      },
+      installCondition: {
+        id: "installCondition", title: "설치조건부 납품사", kind: "물품 구매·설치", subtitle: "발주기관 물품계약에 현장 설치 포함", parent: "contractOffice",
+        summary: "발주기관이 물품 구매를 직접 발주하면서 계약 조건에 현장 납품과 설치를 포함하는 경우 그 계약상대자인 공급업체입니다. 나라장터의 물품구매(제조) 공고와 계약 특수조건에서도 설치조건부 구매 사례를 확인할 수 있습니다.",
+        duties: ["입찰 규격서와 계약서에 납품 장소, 설치 범위·일정, 검사·인수 조건을 명시합니다.", "현장 반입·양중·전원·기초 등 설치 인터페이스와 하자 책임을 조율합니다.", "설치가 별도 공사에 해당하는지, 필요한 등록·자격과 안전조치를 확인합니다."],
+        example: "발주기관이 공조기나 태양광 설비를 설치조건부 물품으로 발주하면 공급업체가 정해진 현장에 납품·설치하고, 계약서의 검사·시운전·하자 조건에 따라 인수받습니다.",
+        caution: "설치가 포함되었다고 언제나 물품계약으로 확정되는 것은 아닙니다. 계약의 주된 목적, 작업 범위, 입찰공고·규격서와 관련 업종 등록 요건을 확인하고, 원도급사 구매라면 사급자재로 구분하세요.",
+        sourceKeys: ["Google 검색: 나라장터 설치조건부 구매 사례", "계약·업무 관계도"]
+      },
+      artwork: {
+        id: "artwork", title: "건축물 미술작품 작가·설치사", kind: "제작·설치 계약", subtitle: "미술작품 의무 대상 건축물", parent: "contractOffice",
+        summary: "문화예술진흥법상 대상 건축물의 건축주는 건축물 미술작품을 설치하고, 작품의 감정·평가와 절차는 법령 및 시·도 조례에 따릅니다. 공공사업에서 발주기관이 건축주·계약 주체가 되는 경우 작품 작가 또는 제작·설치 업체와 별도 계약할 수 있습니다.",
+        duties: ["건축물 용도·규모와 법정 설치 대상 여부 및 적용 절차를 확인합니다.", "시·도 조례에 따른 작품 선정·감정·평가 절차를 거쳐 작가 또는 제작·설치 업체와 계약합니다.", "작품 제작·운송·기초·전기·설치·검수·저작권과 하자 범위를 정하고 공사 현장과 일정을 조율합니다."],
+        example: "미술작품 설치 대상인 공공청사를 신축하는 경우 발주기관이 지역 조례에 따른 심의·평가를 진행하고, 선정 작가와 작품 제작·설치 계약을 체결해 시공 일정 및 현장 인수 조건을 조정합니다.",
+        caution: "모든 공공건축물이 대상인 것은 아닙니다. 대상 용도·규모, 건축주 지위, 해당 시·도 조례와 심의 절차를 먼저 확인하세요. 표준계약서 사용 여부와 계약 방식도 발주기관 기준을 따릅니다.",
+        sourceKeys: ["문화예술진흥법 제9조·제9조의2", "문화예술진흥법 시행령 제12조", "Google 검색: 문체부 미술작품 표준계약서"]
+      },
+      subcontractor: {
+        id: "subcontractor", title: "하도급사", kind: "전문공종 계약", subtitle: "하수급인·전문건설사업자", parent: "prime",
+        summary: "원도급사로부터 일부 공종을 하도급받아 해당 범위의 공사를 수행합니다. 원도급사와 공정·품질·안전 계획을 맞추고 계약된 성과를 제출합니다.",
+        duties: ["철근콘크리트·토공·방수 등 계약 공종을 시공합니다.", "작업계획, 위험성평가와 안전교육 등 현장 업무를 이행합니다.", "납품·검측·기성 확인에 필요한 자료를 원도급사에 제출합니다."],
+        example: "원도급사가 철근콘크리트 전문업체와 골조 공종 하도급계약을 맺으면 해당 업체는 맡은 골조 범위에 대해 원도급사와 일정·검측을 조율합니다.",
+        caution: "하도급 자체와 재하도급에는 법률상 제한 및 통보·서면승낙 조건이 있을 수 있습니다. 공종과 계약금액, 발주자 통보·승인 요건을 확인하세요.",
+        sourceKeys: ["건설산업기본법 제29조", "계약·업무 관계도"]
+      },
+      supplierPrime: {
+        id: "supplierPrime", title: "사급자재 납품·설치사", kind: "사급 계약", subtitle: "원도급사 또는 하도급사가 구매", parent: "prime",
+        summary: "원도급사나 하도급사가 구매하는 자재를 공급하거나 설치합니다. 자재 납품 계약인지, 공사 시공이 포함된 계약인지에 따라 계약 성격과 현장 책임이 달라집니다.",
+        duties: ["발주한 업체에 자재·시험성적서 등 계약 성과물을 납품합니다.", "설치 포함 시 작업 범위·시공 책임·검수 기준·하자 기간을 합의합니다.", "반입 일정과 양중·보관·타 공종 간섭 등 현장 조건을 조율합니다."],
+        example: "원도급사가 금속제창 업체와 창호를 구매하면서 현장 설치까지 맡긴 경우, 제작·납품만인지 설치까지인지와 검수·하자 기준을 계약서에 구분합니다.",
+        caution: "납품만 하는 자재업체와 실제 공사 일부를 수행하는 설치업체를 같은 지위로 단정하지 마세요. 계약 실질, 법령상 공사 해당 여부를 확인합니다.",
+        sourceKeys: ["계약·업무 관계도", "착공 전 관계도"]
+      },
+      equipmentVendor: {
+        id: "equipmentVendor", title: "건설기계 임대·운영업체", kind: "조건부 장비 임차·운영", subtitle: "원도급사·하도급사가 필요 장비를 계약", parent: "prime",
+        summary: "공사에 필요한 크레인·고소작업대·굴착기 등 장비를 현장에 공급하거나 운전원과 함께 운영하는 업체입니다. 제공된 업무흐름도에는 장비 반입 신청, 차량계 장비·중량물 취급 작업계획서와 고위험 작업 검토가 나타납니다. 별도 계약 주체와 계약 형태는 실제 장비를 발주한 업체 및 업무 범위에 따라 달라집니다.",
+        duties: ["장비 종류·규격, 임대 기간, 운전원 포함 여부, 반입·회수 일정과 비용을 계약서에 명시합니다.", "현장 반입 전 장비·운전원 자격·검사 및 보험 서류를 확인하고 반입 승인 절차를 진행합니다.", "양중·고소·굴착 등 해당 작업의 계획서, 작업구역·신호수·유도자 및 안전조치 책임을 원도급사·하도급사와 조정합니다."],
+        example: "하도급사가 크레인 임대와 운전원 용역을 계약했다면 해당 하도급사가 계약 상대방이며, 원도급사는 현장 반입·작업계획과 공정 간섭을 통합 조정할 수 있습니다. 장비만 임차하는지 시공·운전까지 맡기는지 계약서에서 구분합니다.",
+        caution: "장비업체가 항상 발주기관과 직접 계약하거나 원도급사의 하도급사가 되는 것은 아닙니다. 장비만 임대하는 계약과 운전·시공이 포함된 계약의 실질, 해당 공사에 필요한 등록·자격, 안전·보험·검사 요건을 확인하세요.",
+        sourceKeys: ["계약·업무 관계도", "안전업무 총괄표"]
+      },
+      inspection: {
+        id: "inspection", title: "법정 안전점검 수행기관", kind: "지정 후 시공자 계약", subtitle: "건설안전점검기관", parent: "prime",
+        summary: "법정 대상 공사에서 시공자가 수행기관 지정을 요청하고, 지정권자가 명부에서 기관을 지정·통보합니다. 발주청 공사는 발주자가, 발주청이 아닌 경우에는 인·허가기관의 장이 지정권자입니다. 시공자는 지정 통보를 받은 뒤 7일 이내 기관과 계약합니다.",
+        duties: ["시공자는 안전관리계획서와 함께 지정 요청 및 점검비용 산정자료를 제출합니다.", "발주청이면 발주자가, 발주청이 아니면 인·허가기관의 장이 모집공고·명부·평가 절차에 따라 지정하고 통보합니다.", "시공자는 지정 통보 후 7일 이내 기관과 계약합니다. 정기·초기점검비는 안전관리비에 포함해 시공자가 지급·증빙 후 정산하고, 정밀안전점검은 별도 대가 기준을 확인합니다."],
+        example: "발주청이 발주한 공사에서 원도급사가 안전점검 수행기관 지정을 요청하면 발주청이 명부와 지침상 절차에 따라 지정·통보합니다. 원도급사는 통보 후 7일 이내 기관과 계약합니다. 정기·초기점검비를 먼저 지급하고 안전관리비 집행 증빙을 제출해 정산받으며, 정밀안전점검비는 해당 산출기준을 따릅니다.",
+        caution: "지정기관을 임의로 고르는 구조가 아니며, 법령상 지정권자는 발주청 여부에 따라 다릅니다. 지정권자는 신청 접수 후 7일 이내 지정공고를 하고, 시공자의 계약기한은 지정 통보를 받은 날부터 7일 이내로 별개입니다. 정기·초기점검과 정밀안전점검의 비용 산정·정산 기준을 구분하세요.",
+        sourceKeys: ["건설기술 진흥법 제62조", "시행령 제100조·제100조의2", "건설공사 안전관리 업무수행 지침 제18조", "건설기술 진흥법 시행규칙 제60조", "계약·업무 관계도"]
+      },
+      technicalGuidance: {
+        id: "technicalGuidance", title: "산업재해 예방 기술지도기관", kind: "전문기관 용역", subtitle: "건설재해예방전문지도기관", parent: "contractOffice",
+        summary: "기술지도 의무 대상 공사에서는 건설공사발주자 또는 법정 범위의 건설공사도급인이 고용노동부 지정 건설재해예방전문지도기관과 계약합니다. 발주자로부터 공사를 최초로 도급받은 수급인은 도급인 자격으로 계약하는 대상에서 제외됩니다. 제공된 안전업무 총괄표의 공공 발주 사례처럼 발주자가 직접 계약하는 경우 발주자가 기관을 선택하고 용역대가를 직접 지급합니다.",
+        duties: ["대상 공사와 제외 공사, 법정 계약 주체를 확인하고 착공일 전날까지 계약합니다.", "발주자가 계약 당사자인 경우 지정 지도기관 중에서 선택해 기관과 직접 계약·대가 지급을 진행합니다.", "지도기관은 건설공사도급인에게 지도하고, 지도를 받는 도급인은 필요한 예방 조치를 이행합니다."],
+        example: "공사금액 1억 원 이상 120억 원 미만(일부 토목공사는 150억 원 미만) 등 법정 대상에 해당하고 제외 사유가 없다면, 발주청이 지정 지도기관을 선택해 착공일 전날까지 계약하고 계약에 따라 대가를 지급합니다. 지도기관은 현장 도급인에게 개선사항을 안내하고 도급인이 조치합니다.",
+        caution: "모든 공사에서 발주자가 계약하는 것은 아닙니다. 산업안전보건법 제73조는 발주자 또는 건설공사도급인을 계약 주체로 두며, 발주자로부터 최초 도급받은 수급인은 제외합니다. 시행령상 금액 범위, 건축허가 대상 및 제외 사유를 공사별로 확인하고, 대가의 지급·정산 방법은 계약서와 적용 비용기준으로 확인하세요.",
+        sourceKeys: ["산업안전보건법 제73조", "산업안전보건법 시행령 제59조", "안전업무 총괄표", "착공 전 관계도"]
+      }
+    };
+
+    const treeData = [
+      { id: "contractOffice", children: [
+        { group: "발주기관 명의로 발주·계약하는 주체", children: [
+          { id: "design" }, { id: "prime", children: [
+            { id: "subcontractor" },
+            { id: "supplierPrime" },
+            { id: "inspection" },
+            { id: "equipmentVendor" }
+          ] },
+          { id: "cm" },
+          { id: "materials" },
+          { id: "wasteTreatment" },
+          { id: "installCondition" },
+          { id: "artwork" },
+          { id: "technicalGuidance" }
+        ] }
+      ] }
+    ];
+
+    const sourceByKey = {
+      "계약·업무 관계도": sources[0],
+      "착공 전 관계도": sources[1],
+      "안전업무 총괄표": sources[2],
+      "건설기술 진흥법 제62조": law.constructionTech,
+      "시행령 제100조·제100조의2": law.safetyDecree,
+      "건설공사 안전관리 업무수행 지침 제18조": law.constructionSafetyGuideline,
+      "건설기술 진흥법 시행규칙 제60조": law.constructionSafetyCost,
+      "산업안전보건법 제73조": law.safetyHealth,
+      "산업안전보건법 시행령 제59조": law.safetyHealthDecree,
+      "건설산업기본법 제29조": law.constructionIndustry,
+      "건설폐기물법 제15조": law.constructionWaste,
+      "건설폐기물법 시행령 제11조 (위탁처리량 100톤 기준)": law.constructionWasteDecree,
+      "건설폐기물법 제16조": law.constructionWasteContract,
+      "문화예술진흥법 제9조·제9조의2": law.culturalArt,
+      "문화예술진흥법 시행령 제12조": law.culturalArtDecree,
+      "Google 검색: 나라장터 설치조건부 구매 사례": law.installationProcurement,
+      "Google 검색: 문체부 미술작품 표준계약서": law.artworkContract,
+      "소방 분리도급": law.fireContract,
+      "건설공사 사업관리 업무지침": law.workGuide
+    };
+
+    const tree = document.getElementById("tree");
+    const titleEl = document.getElementById("detailTitle");
+    const summaryEl = document.getElementById("detailSummary");
+    const dutiesEl = document.getElementById("detailDuties");
+    const exampleEl = document.getElementById("detailExample");
+    const cautionEl = document.getElementById("detailCaution");
+    const sourceEl = document.getElementById("detailSources");
+    const badgeEl = document.getElementById("detailBadge");
+    const kickerEl = document.getElementById("detailKicker");
+    const searchEl = document.getElementById("search");
+    let selectedId = "contractOffice";
+
+    const chevron = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    function makeNode(item, parentList) {
+      const li = document.createElement("li");
+      if (item.group) {
+        li.className = "tree-group";
+        const group = document.createElement("div");
+        group.className = "node-row";
+        const spacer = document.createElement("span");
+        spacer.className = "toggle-spacer";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "node-button";
+        button.innerHTML = '<span class="node-title">' + item.group + '</span><span class="node-kind">분류</span>';
+        group.append(spacer, button);
+        const children = document.createElement("ul");
+        item.children.forEach(child => makeNode(child, children));
+        li.append(group, children);
+        parentList.append(li);
+        return li;
+      }
+      const role = roles[item.id];
+      if (!role) return li;
+      li.className = "role-node";
+      li.dataset.search = (role.title + " " + role.kind + " " + role.subtitle + " " + role.summary + " " + role.duties.join(" ")).toLocaleLowerCase("ko");
+      const row = document.createElement("div");
+      row.className = "node-row";
+      const expandable = Array.isArray(item.children) && item.children.length > 0;
+      const toggle = document.createElement(expandable ? "button" : "span");
+      if (expandable) {
+        toggle.type = "button";
+        toggle.className = "toggle";
+        const initiallyExpanded = role.id === "contractOffice" || role.id === "prime";
+        toggle.setAttribute("aria-label", role.title + " 하위 항목 " + (initiallyExpanded ? "접기" : "펼치기"));
+        toggle.setAttribute("aria-expanded", String(initiallyExpanded));
+        toggle.innerHTML = chevron;
+        toggle.addEventListener("click", () => {
+          const children = li.querySelector(":scope > ul");
+          const expanded = children.hidden;
+          children.hidden = !expanded;
+          toggle.setAttribute("aria-expanded", String(expanded));
+          toggle.setAttribute("aria-label", role.title + " 하위 항목 " + (expanded ? "접기" : "펼치기"));
+        });
+      } else {
+        toggle.className = "toggle-spacer";
+      }
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "node-button";
+      button.dataset.role = role.id;
+      button.setAttribute("aria-current", String(selectedId === role.id));
+      button.innerHTML = '<span class="node-title">' + role.title + '<span class="node-subtitle">' + role.subtitle + '</span></span><span class="node-kind">' + role.kind + '</span>';
+      button.addEventListener("click", () => selectRole(role.id));
+      row.append(toggle, button);
+      li.append(row);
+      if (expandable) {
+        if (role.id === "contractOffice") li.classList.add("group-root");
+        const children = document.createElement("ul");
+        children.hidden = !(role.id === "contractOffice" || role.id === "prime");
+        item.children.forEach(child => makeNode(child, children));
+        li.append(children);
+      }
+      parentList.append(li);
+      return li;
+    }
+
+    treeData.forEach(item => makeNode(item, tree));
+
+    function makeLink(source, className = "source-link") {
+      const link = document.createElement("a");
+      link.className = className;
+      link.href = source.href;
+      link.textContent = source.label;
+      if (!source.local) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      return link;
+    }
+
+    function selectRole(id) {
+      const role = roles[id];
+      if (!role) return;
+      selectedId = id;
+      document.querySelectorAll(".node-button[data-role]").forEach(button => {
+        button.setAttribute("aria-current", String(button.dataset.role === id));
+      });
+      titleEl.textContent = role.title;
+      summaryEl.textContent = role.summary;
+      badgeEl.textContent = role.kind;
+      kickerEl.textContent = role.parent ? "계약 주체 · 업무 관계" : "발주기관 내부 · 계약 실무";
+      dutiesEl.replaceChildren(...role.duties.map(duty => {
+        const li = document.createElement("li");
+        li.textContent = duty;
+        return li;
+      }));
+      exampleEl.textContent = role.example;
+      cautionEl.textContent = role.caution;
+      sourceEl.replaceChildren(...role.sourceKeys.map(key => sourceByKey[key]).filter(Boolean).map(source => makeLink(source)));
+    }
+
+    function filterTree() {
+      const query = searchEl.value.trim().toLocaleLowerCase("ko");
+      let visible = 0;
+      [...document.querySelectorAll(".role-node")].reverse().forEach(li => {
+        const match = !query || li.dataset.search.includes(query);
+        const hasMatchingDescendant = [...li.querySelectorAll(".role-node")].some(child => !child.classList.contains("hidden-by-search"));
+        const keepVisible = match || hasMatchingDescendant;
+        li.classList.toggle("hidden-by-search", !keepVisible);
+        if (match) visible++;
+        if (keepVisible && query) {
+          let parent = li.parentElement;
+          while (parent && parent !== tree) {
+            if (parent.tagName === "LI" && parent.classList.contains("role-node")) {
+              const children = parent.querySelector(":scope > ul");
+              const toggle = parent.querySelector(":scope > .node-row .toggle");
+              if (children) children.hidden = false;
+              if (toggle) {
+                toggle.setAttribute("aria-expanded", "true");
+                const roleId = parent.querySelector(":scope > .node-row .node-button").dataset.role;
+                toggle.setAttribute("aria-label", roles[roleId].title + " 하위 항목 접기");
+              }
+            }
+            parent = parent.parentElement;
+          }
+        }
+      });
+      document.querySelectorAll(".tree-group").forEach(group => {
+        const hasMatch = [...group.querySelectorAll(".role-node")].some(li => !li.classList.contains("hidden-by-search"));
+        group.classList.toggle("hidden-by-search", !hasMatch);
+      });
+      document.getElementById("emptySearch").classList.toggle("visible", query.length > 0 && visible === 0);
+      if (query && visible) {
+        const first = [...document.querySelectorAll(".node-button[data-role]")].find(button => button.closest(".role-node").dataset.search.includes(query));
+        if (first) selectRole(first.dataset.role);
+      }
+    }
+
+    searchEl.addEventListener("input", filterTree);
+    document.getElementById("expandAll").addEventListener("click", event => {
+      const expandableNodes = [...tree.querySelectorAll(".role-node")].filter(item => item.querySelector(":scope > ul"));
+      const expand = event.currentTarget.dataset.expanded !== "true";
+      expandableNodes.forEach(item => {
+        const children = item.querySelector(":scope > ul");
+        const toggle = item.querySelector(":scope > .node-row .toggle");
+        children.hidden = !expand;
+        if (toggle) {
+          toggle.setAttribute("aria-expanded", String(expand));
+          const id = item.querySelector(":scope > .node-row .node-button").dataset.role;
+          toggle.setAttribute("aria-label", roles[id].title + " 하위 항목 " + (expand ? "접기" : "펼치기"));
+        }
+      });
+      event.currentTarget.dataset.expanded = String(expand);
+      event.currentTarget.textContent = expand ? "모두 접기" : "모두 펼치기";
+    });
+
+    document.querySelectorAll("[data-flow-role]").forEach(button => {
+      button.addEventListener("click", () => {
+        selectRole(button.dataset.flowRole);
+        document.getElementById("explorer").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    const allSources = document.getElementById("allSources");
+    sources.forEach(source => allSources.append(makeLink(source, "source-chip")));
+    selectRole(selectedId);
+  </script>
+</body>
+</html>
